@@ -1,12 +1,23 @@
 package main
 
 import (
-	"github.com/yuin/gopher-lua"
+	"GoScanForSecrets/internal/plugins"
+	"fmt"
 )
 
-func main() {
-	L := lua.NewState()
-	defer L.Close()
+const pluginPath = "patterns/"
 
-	L.DoString("print('hello, from Lua')")
+func main() {
+	// start plugin VM
+	lua := plugins.NewLuaVM()
+	defer lua.Close()
+
+	importedPatterns, err := plugins.LoadPatterns(lua, pluginPath)
+	if err != nil {
+	}
+
+	for pattern := range importedPatterns {
+		fmt.Println(pattern)
+	}
+
 }
