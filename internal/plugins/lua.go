@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"fmt"
+	"regexp"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -10,6 +11,12 @@ type PatternDefinition struct {
 	Name     string
 	Regex    string
 	Severity string
+}
+
+type CompiledPattern struct {
+	Name     string
+	Severity string
+	Regex    *regexp.Regexp
 }
 
 func NewLuaVM() *lua.LState {
@@ -46,4 +53,23 @@ func LoadPatterns(L *lua.LState, path string) ([]PatternDefinition, error) {
 	})
 
 	return patterns, nil
+}
+
+func CompilePatterns(patterns []PatternDefinition) ([]CompiledPattern, error) {
+	compiled := make([]CompiledPattern, 0, len(patterns))
+
+	for _, pattern := range patterns {
+		regex, err := regexp.Compile(pattern.Regex)
+		if err != nil {
+			return nil, fmt.Errorf("failed to compile regex %s: %w", pattern.Name, err)
+		}
+
+		compiled = append(compiled, CompiledPattern{
+			Name:     pattern.Name,
+			Severity: pattern.Severity,
+			Regex:    regex,
+		})
+	}
+
+	return compiled, nil
 }

@@ -14,10 +14,20 @@ func main() {
 
 	importedPatterns, err := plugins.LoadPatterns(lua, pluginPath)
 	if err != nil {
+		panic(err)
 	}
 
-	for pattern := range importedPatterns {
-		fmt.Println(pattern)
+	fmt.Println("patterns imported")
+
+	compiledPatterns, err := plugins.CompilePatterns(importedPatterns)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("patterns compiled")
+
+	for _, pattern := range compiledPatterns {
+		fmt.Println(pattern.Name)
 	}
 
 }
