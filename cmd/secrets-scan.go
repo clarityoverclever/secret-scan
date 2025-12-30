@@ -19,24 +19,28 @@ func main() {
 	log := logger.SetupLogger(*silent, *verbose)
 
 	// start plugin VM
-	lua := plugins.NewLuaVM()
-	defer lua.Close()
+	loader := plugins.NewPatternLoader(log)
+	defer loader.Close()
 
-	importedPatterns, err := plugins.LoadPatterns(lua, pluginPath, log)
+	log.Info("loading patterns")
+
+	importedPatterns, err := loader.LoadPatterns(pluginPath)
 	if err != nil {
 		log.Error("failed to load patterns", "error", err)
 		os.Exit(1)
 	}
 
-	log.Info("loaded patterns", "count", len(importedPatterns))
+	log.Info("patterns loaded")
 
-	compiledPatterns, err := plugins.CompilePatterns(importedPatterns, log)
+	log.Info("compiling patterns")
+
+	compiledPatterns, err := loader.CompilePatterns(importedPatterns)
 	if err != nil {
 		log.Error("failed to compile patterns", "error", err)
 		os.Exit(1)
 	}
 
-	log.Info("compiled patterns", "count", len(compiledPatterns))
+	log.Info("pattern compilation complete")
 
 	for _, pattern := range compiledPatterns {
 		log.Debug("loaded pattern", "name", pattern.Name, "severity", pattern.Severity)
