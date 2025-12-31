@@ -13,7 +13,7 @@ type ExcelExtractor struct{}
 
 func (e *ExcelExtractor) Supports(filename string) bool {
 	extension := strings.ToLower(filepath.Ext(filename))
-	return extension == ".xlsx" || extension == ".xls" || extension == ".xlsm"
+	return extension == ".xlsx"
 }
 
 func (e *ExcelExtractor) Extract(ctx context.Context, r io.Reader) ([]string, error) {

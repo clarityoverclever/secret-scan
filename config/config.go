@@ -18,7 +18,7 @@ func ParseFlags() Config {
 
 	flag.BoolVar(&cfg.Silent, "silent", false, "suppress output")
 	flag.BoolVar(&cfg.Verbose, "verbose", false, "enable verbose output")
-	flag.StringVar(&cfg.OutputFilename, "output", "", "output file")
+	flag.StringVar(&cfg.OutputFilename, "out", "", "output file")
 	flag.IntVar(&cfg.Threads, "threads", runtime.NumCPU()-1, "number of threads")
 
 	flag.Parse()

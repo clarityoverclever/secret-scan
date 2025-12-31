@@ -13,20 +13,37 @@ import (
 const pluginPath = "patterns/"
 
 func main() {
+	var err error
+
 	// parse flags
 	cfg := config.ParseFlags()
 
 	// init logger
 	log := logger.SetupLogger(cfg.Silent, cfg.Verbose)
 
+	// create output file if specified
+	var outputFile *os.File
+	if cfg.OutputFilename != "" {
+		log.Debug("creating output file", "path", cfg.OutputFilename)
+		outputFile, err = os.Create(cfg.OutputFilename)
+		if err != nil {
+			log.Error("failed to create output file", "error", err)
+			os.Exit(1)
+		}
+		defer outputFile.Close()
+	} else {
+		outputFile = os.Stdout
+	}
+
 	// init json encoder
-	encoder := json.NewEncoder(os.Stdout)
+	encoder := json.NewEncoder(outputFile)
 
 	// start plugin VM
 	log.Debug("initializing lua plugin VM")
 	loader := plugins.NewPatternLoader(log)
 	defer loader.Close()
 
+	// import patterns
 	log.Debug("importing patterns")
 	importedPatterns, err := loader.LoadPatterns(pluginPath)
 	if err != nil {
@@ -47,10 +64,6 @@ func main() {
 	ctx := context.Background()
 
 	log.Debug("scanning path", "path", cfg.ScanPath)
-
-	for _, pattern := range compiledPatterns {
-		log.Debug("ready pattern", "name", pattern.Name, "severity", pattern.Severity)
-	}
 
 	log.Info("starting scan")
 
