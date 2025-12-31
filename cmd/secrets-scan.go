@@ -22,7 +22,7 @@ func main() {
 	loader := plugins.NewPatternLoader(log)
 	defer loader.Close()
 
-	log.Info("loading patterns")
+	log.Debug("loading patterns")
 
 	importedPatterns, err := loader.LoadPatterns(pluginPath)
 	if err != nil {
@@ -30,9 +30,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Info("patterns loaded")
+	log.Debug("patterns loaded")
 
-	log.Info("compiling patterns")
+	log.Debug("compiling patterns")
 
 	compiledPatterns, err := loader.CompilePatterns(importedPatterns)
 	if err != nil {
@@ -40,7 +40,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Info("pattern compilation complete")
+	log.Debug("pattern compilation complete")
 
 	for _, pattern := range compiledPatterns {
 		log.Debug("loaded pattern", "name", pattern.Name, "severity", pattern.Severity)

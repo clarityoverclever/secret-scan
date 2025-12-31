@@ -97,7 +97,7 @@ func (pl *PatternLoader) LoadPatterns(path string) ([]PatternDefinition, error) 
 	})
 
 	if skippedCount > 0 {
-		pl.logger.Info("pattern loading complete with warnings", "skipped: ", skippedCount)
+		pl.logger.Warn("pattern loading complete with warnings", "skipped: ", skippedCount)
 	}
 
 	return patterns, nil
