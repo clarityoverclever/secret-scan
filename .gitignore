@@ -14,6 +14,7 @@
 # Go workspace file
 go.work
 /workspace
+/out
 
 # Dependency directories
 vendor/
