@@ -3,6 +3,8 @@ package main
 import (
 	"GoScanForSecrets/internal/logger"
 	"GoScanForSecrets/internal/plugins"
+	//"GoScanForSecrets/internal/scanner"
+	"encoding/json"
 	"flag"
 	"os"
 )
@@ -18,21 +20,20 @@ func main() {
 	// init logger
 	log := logger.SetupLogger(*silent, *verbose)
 
+	// init json encoder
+	//encoder := json.NewEncoder(os.Stdout)
+
 	// start plugin VM
+	log.Debug("initializing lua plugin VM")
 	loader := plugins.NewPatternLoader(log)
 	defer loader.Close()
 
-	log.Debug("loading patterns")
-
+	log.Debug("importing patterns")
 	importedPatterns, err := loader.LoadPatterns(pluginPath)
 	if err != nil {
 		log.Error("failed to load patterns", "error", err)
 		os.Exit(1)
 	}
-
-	log.Debug("patterns loaded")
-
-	log.Debug("compiling patterns")
 
 	compiledPatterns, err := loader.CompilePatterns(importedPatterns)
 	if err != nil {
@@ -40,9 +41,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Debug("pattern compilation complete")
+	// init scanner
+	//scanner := scanner.NewScanner(encoder)
 
 	for _, pattern := range compiledPatterns {
-		log.Debug("loaded pattern", "name", pattern.Name, "severity", pattern.Severity)
+		log.Debug("ready pattern", "name", pattern.Name, "severity", pattern.Severity)
 	}
 }

@@ -98,6 +98,8 @@ func (pl *PatternLoader) LoadPatterns(path string) ([]PatternDefinition, error) 
 
 	if skippedCount > 0 {
 		pl.logger.Warn("pattern loading complete with warnings", "skipped: ", skippedCount)
+	} else {
+		pl.logger.Debug("patterns loaded", "count", len(patterns))
 	}
 
 	return patterns, nil
@@ -120,7 +122,7 @@ func (pl *PatternLoader) CompilePatterns(patterns []PatternDefinition) ([]Compil
 		})
 	}
 
-	pl.logger.Debug("compiled patterns", "count", len(compiled))
+	pl.logger.Debug("patterns compiled", "count", len(compiled))
 
 	return compiled, nil
 }

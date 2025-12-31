@@ -51,7 +51,7 @@ func SetupLogger(silent, verbose bool) *slog.Logger {
 	}
 
 	handler := &MultiHandler{
-		stdoutHandler: slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		stdoutHandler: slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 			Level: level,
 		}),
 		stderrHandler: slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
