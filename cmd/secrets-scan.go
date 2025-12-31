@@ -1,13 +1,12 @@
 package main
 
 import (
+	"GoScanForSecrets/config"
 	"GoScanForSecrets/internal/logger"
 	"GoScanForSecrets/internal/plugins"
 	//"GoScanForSecrets/internal/scanner"
 
-	//"GoScanForSecrets/internal/scanner"
 	//"encoding/json"
-	"flag"
 	"os"
 )
 
@@ -15,23 +14,10 @@ const pluginPath = "patterns/"
 
 func main() {
 	// parse flags
-	silent := flag.Bool("silent", false, "suppress output")
-	verbose := flag.Bool("verbose", false, "enable verbose output")
-	flag.Parse()
-
-	// parse positional flag
-	var scanPath string
-	scanPath = "."
-
-	if flag.NArg() > 0 {
-		scanPath = flag.Arg(0)
-	}
-
-	var outputFile string
-	flag.StringVar(&outputFile, "output", "", "output file")
+	cfg := config.ParseFlags()
 
 	// init logger
-	log := logger.SetupLogger(*silent, *verbose)
+	log := logger.SetupLogger(cfg.Silent, cfg.Verbose)
 
 	// init json encoder
 	//encoder := json.NewEncoder(os.Stdout)
@@ -57,7 +43,7 @@ func main() {
 	// init scanner
 	//scanner := scanner.NewScanner(compiledPatterns, encoder, log)
 
-	log.Debug("scanning path", "path", scanPath)
+	log.Debug("scanning path", "path", cfg.ScanPath)
 
 	for _, pattern := range compiledPatterns {
 		log.Debug("ready pattern", "name", pattern.Name, "severity", pattern.Severity)
