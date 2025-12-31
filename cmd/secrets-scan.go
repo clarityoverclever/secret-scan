@@ -4,13 +4,9 @@ import (
 	"GoScanForSecrets/config"
 	"GoScanForSecrets/internal/logger"
 	"GoScanForSecrets/internal/plugins"
-	"GoScanForSecrets/internal/scanner"
+	"GoScanForSecrets/internal/scan"
 	"context"
 	"encoding/json"
-
-	//"GoScanForSecrets/internal/scanner"
-
-	//"encoding/json"
 	"os"
 )
 
@@ -45,9 +41,9 @@ func main() {
 	}
 
 	// init scanner
-	scanner := scanner.NewScanner(compiledPatterns, encoder, log, cfg.Threads)
+	scanner := scan.NewScanner(compiledPatterns, encoder, log, cfg.Threads)
 
-	// add background context for scanner
+	// add background context for the scanner
 	ctx := context.Background()
 
 	log.Debug("scanning path", "path", cfg.ScanPath)
