@@ -1,0 +1,74 @@
+
+# secret-scan
+
+A fast, multi-threaded CLI tool for scanning files and directories to detect exposed secrets, credentials, and sensitive information.
+
+## Features
+
+- 🚀 **Multi-threaded scanning** - Utilizes all available CPU cores
+- 📄 **Multiple file formats** - Supports text files (txt, log, yaml, json, csv, etc.) and Excel files (xlsx, xls, xlsm)
+- 🔌 **Extensible patterns** - Pattern definitions via Lua scripts
+- 📊 **JSON output** - Structured findings for easy parsing and integration
+- 🎯 **Configurable** - Control verbosity, threading, and output location
+
+## Installation
+### Clone the repository
+git clone <your-repo-url> cd secret-scan
+
+### Build
+go build -o secret-scan ./cmd
+
+## Usage
+
+### Scan current directory
+./secret-scan
+### Scan specific path
+./secret-scan /path/to/scan
+### Scan with verbose output
+./secret-scan -verbose /path/to/scan
+
+## Output Options
+### Output to file
+./secret-scan -output findings.json /path/to/scan
+### Pipe to jq for filtering
+./secret-scan /path/to/scan | jq '.severity == "critical"'
+### Silent mode (errors only)
+./secret-scan -silent /path/to/scan > findings.json
+
+## Performance Tuning
+./secret-scan -threads 4 /path/to/scan
+
+
+## Command-Line Flags
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-verbose` | Enable verbose debug output | `false` |
+| `-silent` | Suppress all output except errors | `false` |
+| `-output` | Write findings to file instead of stdout | stdout |
+| `-threads` | Number of worker threads | CPU cores - 1 |
+
+## Output Format
+
+Findings are output as JSON, one per line:
+
+Patterns are defined in `patterns/patterns.lua`. See the file for examples of how to add custom patterns.
+
+## Supported File Types
+
+- **Text files**: `.txt`, `.log`, `.yaml`, `.yml`, `.json`, `.md`, `.conf`, `.cfg`, `.csv`
+- **Excel files**: `.xlsx`
+
+
+## Examples
+### Scan a web application directory
+./secret-scan -verbose /var/www/myapp
+### Scan and save high-severity findings
+./secret-scan /project | jq 'select(.severity == "critical" or .severity == "high")' > critical-findings.json
+### Quick scan with minimal output
+./secret-scan -silent -output report.json ~/Documents
+
+
+## License
+
+See [LICENSE](license) file for details.
