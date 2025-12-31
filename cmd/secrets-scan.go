@@ -4,7 +4,9 @@ import (
 	"GoScanForSecrets/internal/logger"
 	"GoScanForSecrets/internal/plugins"
 	//"GoScanForSecrets/internal/scanner"
-	"encoding/json"
+
+	//"GoScanForSecrets/internal/scanner"
+	//"encoding/json"
 	"flag"
 	"os"
 )
@@ -16,6 +18,17 @@ func main() {
 	silent := flag.Bool("silent", false, "suppress output")
 	verbose := flag.Bool("verbose", false, "enable verbose output")
 	flag.Parse()
+
+	// parse positional flag
+	var scanPath string
+	scanPath = "."
+
+	if flag.NArg() > 0 {
+		scanPath = flag.Arg(0)
+	}
+
+	var outputFile string
+	flag.StringVar(&outputFile, "output", "", "output file")
 
 	// init logger
 	log := logger.SetupLogger(*silent, *verbose)
@@ -42,7 +55,9 @@ func main() {
 	}
 
 	// init scanner
-	//scanner := scanner.NewScanner(encoder)
+	//scanner := scanner.NewScanner(compiledPatterns, encoder, log)
+
+	log.Debug("scanning path", "path", scanPath)
 
 	for _, pattern := range compiledPatterns {
 		log.Debug("ready pattern", "name", pattern.Name, "severity", pattern.Severity)

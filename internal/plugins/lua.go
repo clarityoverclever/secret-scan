@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"GoScanForSecrets/internal/models"
 	"fmt"
 	"log/slog"
 	"path/filepath"
@@ -12,18 +13,6 @@ import (
 type PatternLoader struct {
 	logger *slog.Logger
 	vm     *lua.LState
-}
-
-type PatternDefinition struct {
-	Name     string
-	Regex    string
-	Severity string
-}
-
-type CompiledPattern struct {
-	Name     string
-	Severity string
-	Regex    *regexp.Regexp
 }
 
 func NewPatternLoader(log *slog.Logger) *PatternLoader {
@@ -48,7 +37,7 @@ func (pl *PatternLoader) readPatternFile(path string) error {
 	return nil
 }
 
-func (pl *PatternLoader) LoadPatterns(path string) ([]PatternDefinition, error) {
+func (pl *PatternLoader) LoadPatterns(path string) ([]models.PatternDefinition, error) {
 	if err := pl.readPatternFile(path); err != nil {
 		return nil, err
 	}
@@ -63,7 +52,7 @@ func (pl *PatternLoader) LoadPatterns(path string) ([]PatternDefinition, error) 
 		return nil, fmt.Errorf("patterns table is not a table")
 	}
 
-	patterns := make([]PatternDefinition, 0, luaTable.Len())
+	patterns := make([]models.PatternDefinition, 0, luaTable.Len())
 	skippedCount := 0
 
 	luaTable.ForEach(func(_, value lua.LValue) {
@@ -87,7 +76,7 @@ func (pl *PatternLoader) LoadPatterns(path string) ([]PatternDefinition, error) 
 			return // skip invalid table entries
 		}
 
-		next := PatternDefinition{
+		next := models.PatternDefinition{
 			Name:     name.String(),
 			Regex:    regex.String(),
 			Severity: severity.String(),
@@ -105,8 +94,8 @@ func (pl *PatternLoader) LoadPatterns(path string) ([]PatternDefinition, error) 
 	return patterns, nil
 }
 
-func (pl *PatternLoader) CompilePatterns(patterns []PatternDefinition) ([]CompiledPattern, error) {
-	compiled := make([]CompiledPattern, 0, len(patterns))
+func (pl *PatternLoader) CompilePatterns(patterns []models.PatternDefinition) ([]models.CompiledPattern, error) {
+	compiled := make([]models.CompiledPattern, 0, len(patterns))
 
 	for _, pattern := range patterns {
 		regex, err := regexp.Compile(pattern.Regex)
@@ -115,7 +104,7 @@ func (pl *PatternLoader) CompilePatterns(patterns []PatternDefinition) ([]Compil
 			continue
 		}
 
-		compiled = append(compiled, CompiledPattern{
+		compiled = append(compiled, models.CompiledPattern{
 			Name:     pattern.Name,
 			Severity: pattern.Severity,
 			Regex:    regex,
