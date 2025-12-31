@@ -1,11 +1,11 @@
 package plugins
 
 import (
-	"GoScanForSecrets/internal/models"
 	"fmt"
 	"log/slog"
 	"path/filepath"
 	"regexp"
+	"secret-scan/internal/models"
 
 	lua "github.com/yuin/gopher-lua"
 )

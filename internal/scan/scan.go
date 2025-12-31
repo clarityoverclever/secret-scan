@@ -1,13 +1,13 @@
 package scan
 
 import (
-	"GoScanForSecrets/internal/models"
 	"context"
 	"encoding/json"
 	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"secret-scan/internal/models"
 	"sync"
 )
 
