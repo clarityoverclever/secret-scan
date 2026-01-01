@@ -5,8 +5,8 @@ A fast, multi-threaded CLI tool for scanning files and directories to detect exp
 
 ## Features
 
-- 🚀 **Multi-threaded scanning** - Utilizes all available CPU cores
-- 📄 **Multiple file formats** - Supports text files (txt, log, yaml, json, csv, etc.) and Excel files (xlsx, xls, xlsm)
+- 🚀 **Multi-threaded scanning** - defaults to CPU cores - 1
+- 📄 **Multiple file formats** - txt, log, yaml, json, csv, etc, xlsx
 - 🔌 **Extensible patterns** - Pattern definitions via Lua scripts
 - 📊 **JSON output** - Structured findings for easy parsing and integration
 - 🎯 **Configurable** - Control verbosity, threading, and output location
@@ -29,7 +29,7 @@ go build -o secret-scan ./cmd
 
 ## Output Options
 ### Output to file
-./secret-scan -output findings.json /path/to/scan
+./secret-scan -out findings.json /path/to/scan
 ### Pipe to jq for filtering
 ./secret-scan /path/to/scan | jq '.severity == "critical"'
 ### Silent mode (errors only)
@@ -38,14 +38,13 @@ go build -o secret-scan ./cmd
 ## Performance Tuning
 ./secret-scan -threads 4 /path/to/scan
 
-
 ## Command-Line Flags
 
-| Flag | Description | Default |
-|------|-------------|---------|
+| Flag       | Description | Default |
+|------------|-------------|---------|
 | `-verbose` | Enable verbose debug output | `false` |
-| `-silent` | Suppress all output except errors | `false` |
-| `-output` | Write findings to file instead of stdout | stdout |
+| `-silent`  | Suppress all output except errors | `false` |
+| `-out `    | Write findings to file instead of stdout | stdout |
 | `-threads` | Number of worker threads | CPU cores - 1 |
 
 ## Output Format
@@ -66,9 +65,14 @@ Patterns are defined in `patterns/patterns.lua`. See the file for examples of ho
 ### Scan and save high-severity findings
 ./secret-scan /project | jq 'select(.severity == "critical" or .severity == "high")' > critical-findings.json
 ### Quick scan with minimal output
-./secret-scan -silent -output report.json ~/Documents
+./secret-scan -silent -out report.json ~/Documents
 
 
 ## License
 
 See [LICENSE](license) file for details.
+
+## Roadmap
+ - use unicode detection rather than file extension to identify plaintext files.
+ - add install switch to expose pattern directory to user.
+ - add severity selection switch to limit patters used in scanning.
