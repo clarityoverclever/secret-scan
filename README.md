@@ -9,7 +9,7 @@ A fast, multi-threaded CLI tool for scanning files and directories to detect exp
 - 📄 **Multiple file formats** - txt, log, yaml, json, csv, etc, xlsx
 - 🔌 **Extensible patterns** - Pattern definitions via Lua scripts
 - 📊 **JSON output** - Structured findings for easy parsing and integration
-- 🎯 **Configurable** - Control verbosity, threading, and output location
+- 🎯 **Configurable** - Control verbosity, threading, patterns, and output location
 
 ## Installation
 ### Clone the repository
@@ -20,7 +20,7 @@ go build -o secret-scan ./cmd
 
 ## Usage
 
-### Scan current directory
+### Scan current directory using embedded patterns
 ./secret-scan
 ### Scan specific path
 ./secret-scan /path/to/scan
@@ -40,12 +40,13 @@ go build -o secret-scan ./cmd
 
 ## Command-Line Flags
 
-| Flag       | Description | Default |
-|------------|-------------|---------|
-| `-verbose` | Enable verbose debug output | `false` |
-| `-silent`  | Suppress all output except errors | `false` |
-| `-out `    | Write findings to file instead of stdout | stdout |
-| `-threads` | Number of worker threads | CPU cores - 1 |
+| Flag        | Description                              | Default |
+|-------------|------------------------------------------|---------|
+| `-verbose`  | Enable verbose debug output              | `false` |
+| `-silent`   | Suppress all output except errors        | `false` |
+| `-out `     | Write findings to file instead of stdout | stdout |
+| `-threads`  | Number of worker threads                 | CPU cores - 1 |
+| `-patterns` | define a patterns direcotry              | ""|
 
 ## Output Format
 
@@ -66,7 +67,9 @@ Patterns are defined in `patterns/patterns.lua`. See the file for examples of ho
 ./secret-scan /project | jq 'select(.severity == "critical" or .severity == "high")' > critical-findings.json
 ### Quick scan with minimal output
 ./secret-scan -silent -out report.json ~/Documents
-
+### Use custom patterns
+./secret-scan -patterns ./my-patterns/ /path/to/scan
+./secret-scan -patterns ~/.secret-scan/patterns/ /path/to/scan
 
 ## License
 
@@ -74,5 +77,4 @@ See [LICENSE](license) file for details.
 
 ## Roadmap
  - use unicode detection rather than file extension to identify plaintext files.
- - add install switch to expose pattern directory to user.
  - add severity selection switch to limit patters used in scanning.

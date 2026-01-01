@@ -2,6 +2,8 @@ package config
 
 import (
 	"flag"
+	"os"
+	"path/filepath"
 	"runtime"
 )
 
@@ -10,6 +12,7 @@ type Config struct {
 	Verbose        bool
 	OutputFilename string
 	ScanPath       string
+	PatternsPath   string
 	Threads        int
 }
 
@@ -19,6 +22,7 @@ func ParseFlags() Config {
 	flag.BoolVar(&cfg.Silent, "silent", false, "suppress output")
 	flag.BoolVar(&cfg.Verbose, "verbose", false, "enable verbose output")
 	flag.StringVar(&cfg.OutputFilename, "out", "", "output file")
+	flag.StringVar(&cfg.PatternsPath, "patterns", "", "path to custome patterns file")
 	flag.IntVar(&cfg.Threads, "threads", runtime.NumCPU()-1, "number of threads")
 
 	flag.Parse()
@@ -31,6 +35,14 @@ func ParseFlags() Config {
 		cfg.ScanPath = flag.Arg(0)
 	} else {
 		cfg.ScanPath = "."
+	}
+
+	// expand home path if supplied as part of the PatternsPath
+	if cfg.PatternsPath != "" {
+		if cfg.PatternsPath[:2] == "~/" {
+			home, _ := os.UserHomeDir()
+			cfg.PatternsPath = filepath.Join(home, cfg.PatternsPath[2:])
+		}
 	}
 
 	return cfg

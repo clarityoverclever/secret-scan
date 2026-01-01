@@ -10,8 +10,6 @@ import (
 	"secret-scan/internal/scan"
 )
 
-const pluginPath = "patterns/"
-
 func main() {
 	var err error
 
@@ -45,7 +43,7 @@ func main() {
 
 	// import patterns
 	log.Debug("importing patterns")
-	importedPatterns, err := loader.LoadPatterns(pluginPath)
+	importedPatterns, err := loader.LoadPatterns(cfg.PatternsPath)
 	if err != nil {
 		log.Error("failed to load patterns", "error", err)
 		os.Exit(1)
