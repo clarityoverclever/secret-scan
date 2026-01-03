@@ -53,7 +53,7 @@ func (pl *PatternLoader) readPatternFile(path string) error {
 	return nil
 }
 
-func (pl *PatternLoader) LoadPatterns(customPath string) ([]models.PatternDefinition, error) {
+func (pl *PatternLoader) LoadPatterns(customPath string, defaultPatterns bool) ([]models.PatternDefinition, error) {
 	var luaFiles []string
 	var luaContents []string
 
@@ -65,7 +65,9 @@ func (pl *PatternLoader) LoadPatterns(customPath string) ([]models.PatternDefini
 		}
 		luaFiles = files
 		luaContents = contents
-	} else { // todo make this additive and diabled by switch
+	}
+
+	if defaultPatterns != false {
 		pl.logger.Debug("loading embedded patterns")
 		files, contents, err := pl.loadFromEmbedded()
 		if err != nil {

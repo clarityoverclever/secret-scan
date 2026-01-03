@@ -8,12 +8,13 @@ import (
 )
 
 type Config struct {
-	Silent         bool
-	Verbose        bool
-	OutputFilename string
-	ScanPath       string
-	PatternsPath   string
-	Threads        int
+	Silent            bool
+	Verbose           bool
+	NoDefaultPatterns bool
+	OutputFilename    string
+	ScanPath          string
+	PatternsPath      string
+	Threads           int
 }
 
 func ParseFlags() Config {
@@ -21,6 +22,7 @@ func ParseFlags() Config {
 
 	flag.BoolVar(&cfg.Silent, "silent", false, "suppress output")
 	flag.BoolVar(&cfg.Verbose, "verbose", false, "enable verbose output")
+	flag.BoolVar(&cfg.NoDefaultPatterns, "no-default-patterns", false, "disable loading of default patterns")
 	flag.StringVar(&cfg.OutputFilename, "out", "", "output file")
 	flag.StringVar(&cfg.PatternsPath, "patterns", "", "path to custome patterns file")
 	flag.IntVar(&cfg.Threads, "threads", runtime.NumCPU()-1, "number of threads")

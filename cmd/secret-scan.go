@@ -43,7 +43,7 @@ func main() {
 
 	// import patterns
 	log.Debug("importing patterns")
-	importedPatterns, err := loader.LoadPatterns(cfg.PatternsPath)
+	importedPatterns, err := loader.LoadPatterns(cfg.PatternsPath, cfg.NoDefaultPatterns)
 	if err != nil {
 		log.Error("failed to load patterns", "error", err)
 		os.Exit(1)
