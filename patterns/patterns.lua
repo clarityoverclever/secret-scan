@@ -16,11 +16,11 @@ patterns = {
         regex = "AIza[0-9A-Za-z\\-_]{35}",
         severity = "critical"
     },
-    {
-        name = "Azure Subscription Key",
-        regex = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
-        severity = "high"
-    },
+    --{
+    --   name = "Azure Subscription Key",
+    --    regex = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+    --    severity = "medium"
+    --},
 
     -- Payment Processing (Critical)
     {

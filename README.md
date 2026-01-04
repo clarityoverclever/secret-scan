@@ -78,7 +78,6 @@ See [LICENSE](license) file for details.
 ## Roadmap
  - use unicode detection rather than file extension to identify plaintext files.
  - add severity selection switch to limit patters used in scanning.
- - -no-default-patterns scan to disabled built in patterns
  - ignore list support
  - entropy based heuristics for possible secret strings
  - false positive reduction with validation checks for some patterns

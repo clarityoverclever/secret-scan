@@ -8,12 +8,14 @@ import (
 	"os"
 	"path/filepath"
 	"secret-scan/internal/models"
+	"secret-scan/internal/validators"
 	"sync"
 )
 
 type Scanner struct {
 	registry   *ExtractorRegistry
 	patterns   []models.CompiledPattern
+	validators *validators.Registry
 	encoder    *json.Encoder
 	logger     *slog.Logger
 	numWorkers int
@@ -37,6 +39,7 @@ func NewScanner(patterns []models.CompiledPattern, encoder *json.Encoder, log *s
 	return &Scanner{
 		registry:   NewExtractorRegistry(),
 		patterns:   patterns,
+		validators: validators.NewRegistry(),
 		encoder:    encoder,
 		logger:     log,
 		numWorkers: numWorkers,
@@ -123,13 +126,27 @@ func (s *Scanner) scanFile(ctx context.Context, path string, extractor Extractor
 	for lineNum, line := range lines {
 		for _, pattern := range s.patterns {
 			if pattern.Regex.MatchString(line) {
-				findings = append(findings, Finding{
-					File:     path,
-					Line:     lineNum + 1,
-					Pattern:  pattern.Name,
-					Severity: pattern.Severity,
-					Match:    line,
-				})
+				matches := pattern.Regex.FindAllString(line, -1)
+				// run the match against a validator if specified
+				for _, match := range matches {
+					if pattern.Validator != "" {
+						validator := s.validators.Get(pattern.Validator)
+						if validator != nil && !validator.Validate(match, line) {
+							s.logger.Debug("match failed validation",
+								"pattern", pattern.Name,
+								"validator", pattern.Validator,
+							)
+							continue // skip this match
+						}
+					}
+					findings = append(findings, Finding{
+						File:     path,
+						Line:     lineNum + 1,
+						Pattern:  pattern.Name,
+						Severity: pattern.Severity,
+						Match:    match,
+					})
+				}
 			}
 		}
 	}

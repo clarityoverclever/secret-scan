@@ -53,9 +53,19 @@ func (pl *PatternLoader) readPatternFile(path string) error {
 	return nil
 }
 
-func (pl *PatternLoader) LoadPatterns(customPath string, defaultPatterns bool) ([]models.PatternDefinition, error) {
+func (pl *PatternLoader) LoadPatterns(customPath string, noDefaultPatterns bool) ([]models.PatternDefinition, error) {
 	var luaFiles []string
 	var luaContents []string
+
+	if noDefaultPatterns != true {
+		pl.logger.Debug("loading embedded patterns")
+		files, contents, err := pl.loadFromEmbedded()
+		if err != nil {
+			return nil, fmt.Errorf("failed to load embedded patterns: %w", err)
+		}
+		luaFiles = append(luaFiles, files...)
+		luaContents = append(luaContents, contents...)
+	}
 
 	if customPath != "" {
 		pl.logger.Debug("loading custom patterns", "path", customPath)
@@ -63,18 +73,8 @@ func (pl *PatternLoader) LoadPatterns(customPath string, defaultPatterns bool) (
 		if err != nil {
 			return nil, fmt.Errorf("failed to load custom patterns: %w", err)
 		}
-		luaFiles = files
-		luaContents = contents
-	}
-
-	if defaultPatterns != false {
-		pl.logger.Debug("loading embedded patterns")
-		files, contents, err := pl.loadFromEmbedded()
-		if err != nil {
-			return nil, fmt.Errorf("failed to load embedded patterns: %w", err)
-		}
-		luaFiles = files
-		luaContents = contents
+		luaFiles = append(luaFiles, files...)
+		luaContents = append(luaContents, contents...)
 	}
 
 	return pl.extractPatterns(luaFiles, luaContents)
