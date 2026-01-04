@@ -8,6 +8,7 @@ A fast, multi-threaded CLI tool for scanning files and directories to detect exp
 - 🚀 **Multi-threaded scanning** - defaults to CPU cores - 1
 - 📄 **Multiple file formats** - txt, log, yaml, json, csv, etc, xlsx
 - 🔌 **Extensible patterns** - Pattern definitions via Lua scripts
+- 🔌 **Pattern validation** - Pattern validation support via calculated string entropy or paired line contents 
 - 📊 **JSON output** - Structured findings for easy parsing and integration
 - 🎯 **Configurable** - Control verbosity, threading, patterns, and output location
 
@@ -40,13 +41,14 @@ go build -o secret-scan ./cmd
 
 ## Command-Line Flags
 
-| Flag        | Description                              | Default |
-|-------------|------------------------------------------|---------|
-| `-verbose`  | Enable verbose debug output              | `false` |
-| `-silent`   | Suppress all output except errors        | `false` |
-| `-out `     | Write findings to file instead of stdout | stdout |
-| `-threads`  | Number of worker threads                 | CPU cores - 1 |
-| `-patterns` | define a patterns direcotry              | ""|
+| Flag                   | Description                              | Default |
+|------------------------|------------------------------------------|-------|
+| `-verbose`             | Enable verbose debug output              | `false` |
+| `-silent`              | Suppress all output except errors        | `false` |
+| `-out `                | Write findings to file instead of stdout | stdout |
+| `-threads`             | Number of worker threads                 | CPU cores - 1 |
+| `-patterns`            | define a patterns direcotry              | ""|
+| `-no-default-patterns` | excludes embedded patterns               | `false`|
 
 ## Output Format
 
@@ -79,5 +81,5 @@ See [LICENSE](license) file for details.
  - use unicode detection rather than file extension to identify plaintext files.
  - add severity selection switch to limit patters used in scanning.
  - ignore list support
- - entropy based heuristics for possible secret strings
  - plugin support for additional extractors
+ - plugin support for additional validators
