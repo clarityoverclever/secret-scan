@@ -211,6 +211,7 @@ func (pl *PatternLoader) extractPatternsFromVM(path string) ([]models.PatternDef
 		name := entry.RawGetString("name")
 		regex := entry.RawGetString("regex")
 		severity := entry.RawGetString("severity")
+		validator := entry.RawGetString("validator")
 
 		if name == lua.LNil || regex == lua.LNil || severity == lua.LNil {
 			skippedCount++
@@ -222,9 +223,10 @@ func (pl *PatternLoader) extractPatternsFromVM(path string) ([]models.PatternDef
 		}
 
 		next := models.PatternDefinition{
-			Name:     name.String(),
-			Regex:    regex.String(),
-			Severity: severity.String(),
+			Name:      name.String(),
+			Regex:     regex.String(),
+			Severity:  severity.String(),
+			Validator: validator.String(),
 		}
 
 		patterns = append(patterns, next)
@@ -251,9 +253,10 @@ func (pl *PatternLoader) CompilePatterns(patterns []models.PatternDefinition) ([
 		}
 
 		compiled = append(compiled, models.CompiledPattern{
-			Name:     pattern.Name,
-			Severity: pattern.Severity,
-			Regex:    regex,
+			Name:      pattern.Name,
+			Severity:  pattern.Severity,
+			Regex:     regex,
+			Validator: pattern.Validator,
 		})
 	}
 

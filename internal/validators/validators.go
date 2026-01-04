@@ -17,12 +17,12 @@ type Registry struct {
 func NewRegistry() *Registry {
 	r := &Registry{validators: make(map[string]Validator)}
 
-	//r.RegisterDefaults()
+	r.RegisterDefaults()
 	return r
 }
 
 func (r *Registry) RegisterDefaults() {
-	// todo r.Register("azure_context", AzureContextValidator)
+	r.Register("azure_context", AzureContextValidator)
 }
 
 func (r *Registry) Register(name string, validator Validator) {
