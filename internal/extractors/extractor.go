@@ -1,4 +1,4 @@
-package scan
+package extractors
 
 import (
 	"context"
@@ -13,12 +13,12 @@ type Extractor interface {
 	Supports(filename string) bool
 }
 
-type ExtractorRegistry struct {
+type Registry struct {
 	extractors []Extractor
 }
 
-func NewExtractorRegistry() *ExtractorRegistry {
-	return &ExtractorRegistry{
+func NewRegistry() *Registry {
+	return &Registry{
 		extractors: []Extractor{
 			&TextExtractor{},
 			&ExcelExtractor{},
@@ -26,7 +26,7 @@ func NewExtractorRegistry() *ExtractorRegistry {
 	}
 }
 
-func (r *ExtractorRegistry) GetExtractor(filename string) Extractor {
+func (r *Registry) Get(filename string) Extractor {
 	for _, extractor := range r.extractors {
 		if extractor.Supports(filename) {
 			return extractor

@@ -1,4 +1,4 @@
-package scan
+package extractors
 
 import (
 	"context"

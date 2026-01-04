@@ -7,13 +7,14 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"secret-scan/internal/extractors"
 	"secret-scan/internal/models"
 	"secret-scan/internal/validators"
 	"sync"
 )
 
 type Scanner struct {
-	registry   *ExtractorRegistry
+	registry   *extractors.Registry
 	patterns   []models.CompiledPattern
 	validators *validators.Registry
 	encoder    *json.Encoder
@@ -24,7 +25,7 @@ type Scanner struct {
 
 type scanJob struct {
 	path      string
-	extractor Extractor
+	extractor extractors.Extractor
 }
 
 type Finding struct {
@@ -37,7 +38,7 @@ type Finding struct {
 
 func NewScanner(patterns []models.CompiledPattern, encoder *json.Encoder, log *slog.Logger, numWorkers int) *Scanner {
 	return &Scanner{
-		registry:   NewExtractorRegistry(),
+		registry:   extractors.NewRegistry(),
 		patterns:   patterns,
 		validators: validators.NewRegistry(),
 		encoder:    encoder,
@@ -67,7 +68,7 @@ func (s *Scanner) ScanPath(ctx context.Context, root string) error {
 		}
 
 		// check if an extractor is available for this file
-		extractor := s.registry.GetExtractor(path)
+		extractor := s.registry.Get(path)
 		if extractor == nil {
 			return nil
 		}
@@ -106,7 +107,7 @@ func (s *Scanner) worker(ctx context.Context, id int, jobs <-chan scanJob, wg *s
 	s.logger.Debug("worker finished", "id", id)
 }
 
-func (s *Scanner) scanFile(ctx context.Context, path string, extractor Extractor) error {
+func (s *Scanner) scanFile(ctx context.Context, path string, extractor extractors.Extractor) error {
 	s.logger.Debug("scanning file", "path", path)
 
 	f, err := os.Open(path)
