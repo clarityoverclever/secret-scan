@@ -100,6 +100,12 @@ patterns = {
         regex = "-----BEGIN PGP PRIVATE KEY BLOCK-----",
         severity = "critical"
     },
+    {
+        name = "RSA Key (Base64)",
+        regex = "[A-Za-z0-9+/]{200,}={0,2}",
+        severity = "high",
+        validator = "base64_high_entropy"
+    },
 
     -- Messaging & Communication (High)
     {
@@ -128,6 +134,11 @@ patterns = {
         name = "Password in Code",
         regex = "[pP][aA][sS][sS][wW][oO][rR][dD]\\s*[=:]\\s*['\"][^'\"\\s]{8,}['\"]",
         severity = "medium"
+    },
+    {
+        name = "Base64 Encoded Secret",
+        regex = "[sS][eE][cC][rR][eE][tT]\\s*[=:]\\s*['\"][A-Za-z0-9+/]{100,}={0,2}['\"]",
+        severity = "high"
     },
     {
         name = "Generic Secret",

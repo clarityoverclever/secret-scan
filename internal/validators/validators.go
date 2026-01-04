@@ -22,6 +22,10 @@ func NewRegistry() *Registry {
 }
 
 func (r *Registry) RegisterDefaults() {
+	r.Register("entropy_low", EntropyValidator(3.5))
+	r.Register("entropy_medium", EntropyValidator(4.5))
+	r.Register("entropy_high", EntropyValidator(5.5))
+	r.Register("base64_high_entropy", Base64HighEntropyValidator(4.5))
 	r.Register("azure_context", AzureContextValidator)
 }
 
