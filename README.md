@@ -75,8 +75,7 @@ Patterns are defined in `patterns/patterns.lua`. See the file for examples of ho
 
 ## License
 
-See [LICENSE](license) file for details.
-
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 ## Roadmap
  - use unicode detection rather than file extension to identify plaintext files.
  - add severity selection switch to limit patters used in scanning.

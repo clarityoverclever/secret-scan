@@ -1,0 +1,16 @@
+secret-scan
+Copyright 2026 Keith Marshall
+
+This software includes the following third-party components:
+
+github.com/xuri/excelize/v2
+  Copyright (c) 2016-2024 xuri
+  Licensed under the BSD 3-Clause License
+
+github.com/yuin/gopher-lua
+  Copyright (c) 2015 Yusuke Inuzuka
+  Licensed under the MIT License
+
+github.com/sabhiram/go-gitignore
+  Copyright (c) 2015 Shaba Abhiram
+  Licensed under the MIT License
