@@ -29,6 +29,7 @@ type Config struct {
 	ScanPath          string
 	PatternsPath      string
 	Threads           int
+	AuditUnknown      bool
 }
 
 func ParseFlags() Config {
@@ -40,6 +41,7 @@ func ParseFlags() Config {
 	flag.StringVar(&cfg.OutputFilename, "out", "", "output file")
 	flag.StringVar(&cfg.PatternsPath, "patterns", "", "path to custome patterns file")
 	flag.IntVar(&cfg.Threads, "threads", runtime.NumCPU()-1, "number of threads")
+	flag.BoolVar(&cfg.AuditUnknown, "audit-unknown", false, "audit unknown patterns")
 
 	flag.Parse()
 

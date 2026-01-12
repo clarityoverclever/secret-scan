@@ -28,13 +28,16 @@ import (
 )
 
 type Scanner struct {
-	registry   *extractors.Registry
-	patterns   []models.CompiledPattern
-	validators *validators.Registry
-	encoder    *json.Encoder
-	logger     *slog.Logger
-	numWorkers int
-	mutex      sync.Mutex
+	registry       *extractors.Registry
+	patterns       []models.CompiledPattern
+	validators     *validators.Registry
+	encoder        *json.Encoder
+	logger         *slog.Logger
+	numWorkers     int
+	mutex          sync.Mutex
+	auditUnknown   bool
+	skipExtensions map[string]int
+	skipMutex      sync.Mutex
 }
 
 type scanJob struct {
@@ -50,14 +53,16 @@ type Finding struct {
 	Match    string `json:"match"`
 }
 
-func NewScanner(patterns []models.CompiledPattern, encoder *json.Encoder, log *slog.Logger, numWorkers int) *Scanner {
+func NewScanner(patterns []models.CompiledPattern, encoder *json.Encoder, log *slog.Logger, numWorkers int, auditUnknown bool) *Scanner {
 	return &Scanner{
-		registry:   extractors.NewRegistry(),
-		patterns:   patterns,
-		validators: validators.NewRegistry(),
-		encoder:    encoder,
-		logger:     log,
-		numWorkers: numWorkers,
+		registry:       extractors.NewRegistry(auditUnknown),
+		patterns:       patterns,
+		validators:     validators.NewRegistry(),
+		encoder:        encoder,
+		logger:         log,
+		numWorkers:     numWorkers,
+		auditUnknown:   auditUnknown,
+		skipExtensions: make(map[string]int),
 	}
 }
 
@@ -84,6 +89,7 @@ func (s *Scanner) ScanPath(ctx context.Context, root string) error {
 		// check if an extractor is available for this file
 		extractor := s.registry.Get(path)
 		if extractor == nil {
+			// todo try plaintext extractor
 			return nil
 		}
 
@@ -137,6 +143,17 @@ func (s *Scanner) scanFile(ctx context.Context, path string, extractor extractor
 		return nil
 	}
 
+	// track extensions returned by plaintext extractor
+	if lines == nil && s.auditUnknown {
+		ext := filepath.Ext(path)
+		if ext != "" {
+			s.skipMutex.Lock()
+			s.skipExtensions[ext]++
+			s.skipMutex.Unlock()
+		}
+		return nil
+	}
+
 	findings := make([]Finding, 0)
 	for lineNum, line := range lines {
 		for _, pattern := range s.patterns {
@@ -178,4 +195,15 @@ func (s *Scanner) scanFile(ctx context.Context, path string, extractor extractor
 		}
 	}
 	return nil
+}
+
+func (s *Scanner) GetSkippedExtensions() map[string]int {
+	s.skipMutex.Lock()
+	defer s.skipMutex.Unlock()
+
+	result := make(map[string]int, len(s.skipExtensions))
+	for ext, count := range s.skipExtensions {
+		result[ext] = count
+	}
+	return result
 }

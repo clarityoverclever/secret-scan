@@ -31,12 +31,18 @@ type Registry struct {
 	extractors []Extractor
 }
 
-func NewRegistry() *Registry {
+func NewRegistry(auditUnknownFileTypes bool) *Registry {
+	extractors := []Extractor{
+		&TextExtractor{},
+		&ExcelExtractor{},
+	}
+
+	if auditUnknownFileTypes {
+		extractors = append(extractors, &PlainTextAuditExtractor{})
+	}
+
 	return &Registry{
-		extractors: []Extractor{
-			&TextExtractor{},
-			&ExcelExtractor{},
-		},
+		extractors: extractors,
 	}
 }
 

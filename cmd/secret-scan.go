@@ -70,7 +70,7 @@ func main() {
 	}
 
 	// init scanner
-	scanner := scan.NewScanner(compiledPatterns, encoder, log, cfg.Threads)
+	scanner := scan.NewScanner(compiledPatterns, encoder, log, cfg.Threads, cfg.AuditUnknown)
 
 	// add background context for the scanner
 	ctx := context.Background()
