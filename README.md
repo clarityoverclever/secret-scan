@@ -10,7 +10,7 @@ A fast, multi-threaded CLI tool for scanning files and directories to detect exp
 - 🔌 **Extensible patterns** - Pattern definitions via Lua scripts
 - 🔌 **Pattern validation** - Pattern validation support via calculated string entropy or paired line contents 
 - 📊 **JSON output** - Structured findings for easy parsing and integration
-- 🎯 **Configurable** - Control verbosity, threading, patterns, and output location
+- 🎯 **Configurable** - Control verbosity, threading, patterns, ignores, and output location
 
 ## Installation
 ### Clone the repository
@@ -42,13 +42,14 @@ go build -o secret-scan ./cmd
 ## Command-Line Flags
 
 | Flag                   | Description                              | Default |
-|------------------------|------------------------------------------|-------|
+|------------------------|------------------------------------------|-----|
 | `-verbose`             | Enable verbose debug output              | `false` |
 | `-silent`              | Suppress all output except errors        | `false` |
 | `-out `                | Write findings to file instead of stdout | stdout |
 | `-threads`             | Number of worker threads                 | CPU cores - 1 |
-| `-patterns`            | define a patterns direcotry              | ""|
+| `-patterns`            | define a patterns directory              | ""|
 | `-no-default-patterns` | excludes embedded patterns               | `false`|
+| `-ignore`              | define a git-style ignore file           | ""|
 
 ## Output Format
 
@@ -60,6 +61,7 @@ Patterns are defined in `patterns/patterns.lua`. See the file for examples of ho
 
 - **Text files**: `.txt`, `.log`, `.yaml`, `.yml`, `.json`, `.md`, `.conf`, `.cfg`, `.csv`
 - **Excel files**: `.xlsx`
+- **default ignores**: ".git/", ".svn/", ".hg/", "node_modules/", "vendor/", "*.exe", "*.dll", "*.so", "*.dylib", "*.zip", "*.tar", "*.tar.gz", "*.rar", "*.7z", "*.bin", "*.class", "*.jar", "*.war", "*.ear", "*.pyc", "*.pyo", "*.o", "*.a", "*.lib", "*.obj", "*.iso", "*.img", "*.dmg"
 
 
 ## Examples
@@ -77,8 +79,5 @@ Patterns are defined in `patterns/patterns.lua`. See the file for examples of ho
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 ## Roadmap
- - use unicode detection rather than file extension to identify plaintext files.
- - add severity selection switch to limit patters used in scanning.
- - ignore list support
  - plugin support for additional extractors
  - plugin support for additional validators
