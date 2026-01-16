@@ -31,6 +31,7 @@ type Scanner struct {
 	registry       *extractors.Registry
 	patterns       []models.CompiledPattern
 	validators     *validators.Registry
+	ignoreManager  *IgnoreManager
 	encoder        *json.Encoder
 	logger         *slog.Logger
 	numWorkers     int
@@ -58,12 +59,17 @@ func NewScanner(patterns []models.CompiledPattern, encoder *json.Encoder, log *s
 		registry:       extractors.NewRegistry(auditUnknown),
 		patterns:       patterns,
 		validators:     validators.NewRegistry(),
+		ignoreManager:  nil,
 		encoder:        encoder,
 		logger:         log,
 		numWorkers:     numWorkers,
 		auditUnknown:   auditUnknown,
 		skipExtensions: make(map[string]int),
 	}
+}
+
+func (s *Scanner) SetIgnoreManager(im *IgnoreManager) {
+	s.ignoreManager = im
 }
 
 func (s *Scanner) ScanPath(ctx context.Context, root string) error {
@@ -83,13 +89,23 @@ func (s *Scanner) ScanPath(ctx context.Context, root string) error {
 		}
 
 		if d.IsDir() {
+			// test if this directory should be ignored
+			if s.ignoreManager != nil && s.ignoreManager.ShouldIgnore(path) {
+				s.logger.Debug("skipping ignored directory", "path", path)
+				return filepath.SkipDir
+			}
+			return nil
+		}
+
+		// Check if file should be ignored
+		if s.ignoreManager != nil && s.ignoreManager.ShouldIgnore(path) {
+			s.logger.Debug("skipping ignored file", "path", path)
 			return nil
 		}
 
 		// check if an extractor is available for this file
 		extractor := s.registry.Get(path)
 		if extractor == nil {
-			// todo try plaintext extractor
 			return nil
 		}
 

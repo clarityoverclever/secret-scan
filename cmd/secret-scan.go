@@ -69,9 +69,17 @@ func main() {
 		os.Exit(1)
 	}
 
+	// load ignore patterns
+	log.Debug("loading ignore patterns", "ignorePath", cfg.IgnorePath)
+	ignoreManager, err := scan.NewIgnoreManager(cfg.IgnorePath)
+	if err != nil {
+		log.Error("failed to load ignore patterns", "error", err)
+		os.Exit(1)
+	}
+
 	// init scanner
 	scanner := scan.NewScanner(compiledPatterns, encoder, log, cfg.Threads, cfg.AuditUnknown)
-
+	scanner.SetIgnoreManager(ignoreManager)
 	// add background context for the scanner
 	ctx := context.Background()
 

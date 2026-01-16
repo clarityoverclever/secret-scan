@@ -28,6 +28,7 @@ type Config struct {
 	OutputFilename    string
 	ScanPath          string
 	PatternsPath      string
+	IgnorePath        string
 	Threads           int
 	AuditUnknown      bool
 }
@@ -39,7 +40,8 @@ func ParseFlags() Config {
 	flag.BoolVar(&cfg.Verbose, "verbose", false, "enable verbose output")
 	flag.BoolVar(&cfg.NoDefaultPatterns, "no-default-patterns", false, "disable loading of default patterns")
 	flag.StringVar(&cfg.OutputFilename, "out", "", "output file")
-	flag.StringVar(&cfg.PatternsPath, "patterns", "", "path to custome patterns file")
+	flag.StringVar(&cfg.PatternsPath, "patterns", "", "path to custom patterns file")
+	flag.StringVar(&cfg.IgnorePath, "ignore", "", "path to git-style ignore patterns file")
 	flag.IntVar(&cfg.Threads, "threads", runtime.NumCPU()-1, "number of threads")
 	flag.BoolVar(&cfg.AuditUnknown, "audit-unknown", false, "audit unknown patterns")
 
