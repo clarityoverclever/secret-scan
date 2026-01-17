@@ -17,6 +17,7 @@ package scan
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/fs"
 	"log/slog"
 	"os"
@@ -39,6 +40,7 @@ type Scanner struct {
 	auditUnknown   bool
 	skipExtensions map[string]int
 	skipMutex      sync.Mutex
+	progress       *ProgressTracker
 }
 
 type scanJob struct {
@@ -72,7 +74,55 @@ func (s *Scanner) SetIgnoreManager(im *IgnoreManager) {
 	s.ignoreManager = im
 }
 
-func (s *Scanner) ScanPath(ctx context.Context, root string) error {
+func (s *Scanner) countFiles(root string) (int64, error) {
+	fmt.Println("parsing files for progress tracking")
+	var count int64
+	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return nil
+		}
+
+		if d.IsDir() {
+			if s.ignoreManager != nil && s.ignoreManager.ShouldIgnore(path) {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+
+		if s.ignoreManager != nil && s.ignoreManager.ShouldIgnore(path) {
+			return nil
+		}
+
+		if s.registry.Get(path) != nil {
+			count++
+		}
+
+		return nil
+	})
+
+	return count, err
+}
+
+func (s *Scanner) ScanPath(ctx context.Context, root string, showProgress bool) error {
+	// First pass: count files
+	var fileCount int64
+	if showProgress {
+		s.logger.Debug("counting files for progress tracking")
+		var err error
+		fileCount, err = s.countFiles(root)
+		if err != nil {
+			s.logger.Warn("failed to count files", "error", err)
+			showProgress = false
+		} else {
+			s.logger.Debug("files to scan", "count", fileCount)
+		}
+	}
+
+	// init progress tracker
+	s.progress = NewProgressTracker(fileCount, showProgress)
+	s.progress.Start()
+	defer s.progress.Stop()
+
 	jobs := make(chan scanJob, 100)
 	var wg sync.WaitGroup
 
@@ -145,6 +195,9 @@ func (s *Scanner) worker(ctx context.Context, id int, jobs <-chan scanJob, wg *s
 
 func (s *Scanner) scanFile(ctx context.Context, path string, extractor extractors.Extractor) error {
 	s.logger.Debug("scanning file", "path", path)
+
+	// update progress after processing this file
+	defer s.progress.Increment()
 
 	f, err := os.Open(path)
 	if err != nil {

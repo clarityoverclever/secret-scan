@@ -31,6 +31,7 @@ type Config struct {
 	IgnorePath        string
 	Threads           int
 	AuditUnknown      bool
+	ShowProgress      bool
 }
 
 func ParseFlags() Config {
@@ -44,6 +45,7 @@ func ParseFlags() Config {
 	flag.StringVar(&cfg.IgnorePath, "ignore", "", "path to git-style ignore patterns file")
 	flag.IntVar(&cfg.Threads, "threads", runtime.NumCPU()-1, "number of threads")
 	flag.BoolVar(&cfg.AuditUnknown, "audit-unknown", false, "audit unknown patterns")
+	flag.BoolVar(&cfg.ShowProgress, "show-progress", false, "print progress bar (slower)")
 
 	flag.Parse()
 

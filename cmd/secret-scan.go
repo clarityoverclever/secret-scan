@@ -87,7 +87,7 @@ func main() {
 
 	log.Info("starting scan")
 
-	if err := scanner.ScanPath(ctx, cfg.ScanPath); err != nil {
+	if err := scanner.ScanPath(ctx, cfg.ScanPath, cfg.ShowProgress); err != nil {
 		log.Error("scan failed", "error", err)
 		os.Exit(1)
 	}

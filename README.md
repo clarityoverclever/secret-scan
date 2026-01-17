@@ -42,7 +42,7 @@ go build -o secret-scan ./cmd
 ## Command-Line Flags
 
 | Flag                   | Description                              | Default |
-|------------------------|------------------------------------------|-----|
+|------------------------|------------------------------------------|---|
 | `-verbose`             | Enable verbose debug output              | `false` |
 | `-silent`              | Suppress all output except errors        | `false` |
 | `-out `                | Write findings to file instead of stdout | stdout |
@@ -50,6 +50,7 @@ go build -o secret-scan ./cmd
 | `-patterns`            | define a patterns directory              | ""|
 | `-no-default-patterns` | excludes embedded patterns               | `false`|
 | `-ignore`              | define a git-style ignore file           | ""|
+| `-show-progress`       | prints a progress bar during scan        | `false`|
 
 ## Output Format
 
